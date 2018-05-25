@@ -21,6 +21,37 @@ class DoomEnvironment:
         self.game.init()
         print("DOOM Game Initialized")
 
+    def preprocess(image, resolution = (64, 64)):
+    	img = skimage.transform.resize(image, resolution)
+	    img = img.astype(np.float32)
+	    return img
+
+
     def run(self, agent):
+
+
+    def watch(self, agent, episodes_to_watch = 10, frame_repeat = 12):
+    	self.game.set_window_visible(True)
+	    self.game.set_mode(Mode.ASYNC_PLAYER)
+	    self.game.init()
+
+	    for episode_num in range(episodes_to_watch):
+	        game.new_episode()
+
+	        while not self.game.is_episode_finished():
+	            
+	            state = preprocess(self.game.get_state().screen_buffer)
+	            state = state.reshape([1, 1, resolution[0], resolution[1]])
+	            best_action_index = agent.get_best_action(state)
+
+	            # Instead of make_action(a, frame_repeat) in order to make the animation smooth
+	            self.game.set_action(actions[best_action_index])
+	            for _ in range(frame_repeat):
+	                self.game.advance_action()
+
+	        # Sleep between episodes
+	        sleep(1.0)
+	        score = game.get_total_reward()
+	        print("Episode Number:", episode_num,"Total score:", score)
 
 
