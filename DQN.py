@@ -8,36 +8,37 @@ from torchvision import datasets, transforms
 from torch.autograd import Variable
 from tqdm import trange
 
-class ReplayMemory:
-    def __init__(self, capacity):
-        channels = 1
-        state_shape = (capacity, channels, resolution[0], resolution[1])
-        self.s1 = np.zeros(state_shape, dtype=np.float32)
-        self.s2 = np.zeros(state_shape, dtype=np.float32)
-        self.a = np.zeros(capacity, dtype=np.int32)
-        self.r = np.zeros(capacity, dtype=np.float32)
-        self.isterminal = np.zeros(capacity, dtype=np.float32)
+class DQNAgent():
 
-        self.capacity = capacity
-        self.size = 0
-        self.pos = 0
+	def __init__(self, stateCount, actionCount):
+		self.stateCount = stateCount
+		self.actionCount = actionCount
+		self.Net = DQNet
+		self.Memory = ReplayMemory
 
-    def add_transition(self, s1, action, s2, isterminal, reward):
-        self.s1[self.pos, 0, :, :] = s1
-        self.a[self.pos] = action
-        if not isterminal:
-            self.s2[self.pos, 0, :, :] = s2
-        self.isterminal[self.pos] = isterminal
-        self.r[self.pos] = reward
+	def act(self, state):
 
-        self.pos = (self.pos + 1) % self.capacity
-        self.size = min(self.size + 1, self.capacity)
+	def observe(self, sample):  
+        self.memory.add_transition(sample)
 
-    def get_sample(self, sample_size):
-        i = sample(range(0, self.size), sample_size)
-        return self.s1[i], self.a[i], self.s2[i], self.isterminal[i], self.r[i]
+    def learn(self):
 
-class Net(nn.Module):
+    def replay(self):
+    	if self.memory.size > batch_size:
+        s1, a, s2, isterminal, r = memory.get_sample(batch_size)
+
+        q = self.Net.get_q_values(s2).data.numpy()
+        q2 = np.max(q, axis=1)
+        target_q = self.Net.get_q_values(s1).data.numpy()
+        # target differs from q only for the selected action. The following means:
+        # target_Q(s,a) = r + gamma * max Q(s2,_) if isterminal else r
+        target_q[np.arange(target_q.shape[0]), a] = r + discount_factor * (1 - isterminal) * q2
+        learn(s1, target_q)
+        pass
+
+
+
+class Model(nn.Module):
     def __init__(self, available_actions_count):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(1, 8, kernel_size=6, stride=3)
@@ -52,4 +53,11 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         return self.fc2(x)
 
-criterion = nn.MSELoss()
+class DQNet:
+
+	def __init__(self, learning_rate = 0.00025):
+		self.model = Model
+		self.learning_rate = learning_rate
+		self.discount_factor = 0.99
+		self.batch_size
+

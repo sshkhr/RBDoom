@@ -1,5 +1,7 @@
+import numpy as np 
+
 class ReplayMemory:
-    def __init__(self, capacity):
+    def __init__(self, capacity = 10000):
         channels = 1
         state_shape = (capacity, channels, resolution[0], resolution[1])
         self.s1 = np.zeros(state_shape, dtype=np.float32)
@@ -15,8 +17,10 @@ class ReplayMemory:
     def add_transition(self, s1, action, s2, isterminal, reward):
         self.s1[self.pos, 0, :, :] = s1
         self.a[self.pos] = action
+
         if not isterminal:
             self.s2[self.pos, 0, :, :] = s2
+        
         self.isterminal[self.pos] = isterminal
         self.r[self.pos] = reward
 
