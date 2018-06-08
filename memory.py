@@ -1,7 +1,7 @@
 import numpy as np 
 
 class ReplayMemory:
-    def __init__(self, capacity = 10000):
+    def __init__(self, resolution, capacity = 10000):
         channels = 1
         state_shape = (capacity, channels, resolution[0], resolution[1])
         self.s1 = np.zeros(state_shape, dtype=np.float32)

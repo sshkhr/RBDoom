@@ -6,20 +6,26 @@ from random import sample, randint, random
 from time import time, sleep
 
 # Creates and initializes ViZDoom environment
-class DoomEnvironment:
+class DoomEnvironment():
 
-    def __init__(self, config_file_path, show_window = False, mode = Mode.PLAYER, screen_resolution = ScreenResolution.RES_640X480):
+    def __init__(self, config_file_path, show_window = False, mode = Mode.PLAYER, screen_format = ScreenFormat.GRAY8,
+                 screen_resolution = ScreenResolution.RES_640X480):
         self.game = DoomGame()
         self.game.load_config(config_file_path)
-        self.initialize_environment(show_window, mode, screen_resolution)
+        self.initialize_environment(show_window, mode, screen_format, screen_resolution)
 
-    def initialize_environment(self, show_window, mode, screen_resolution):
+    def initialize_environment(self, show_window, mode, screen_format, screen_resolution):
         self.game.set_window_visible(show_window)
         self.game.set_mode(Mode.PLAYER)
         self.game.set_screen_format(screen_format)
         self.game.set_screen_resolution(screen_resolution)
         self.game.init()
         print("DOOM Game Initialized")
+
+    def get_actions(self):
+        n = self.game.get_available_buttons_size()
+        actions = [list(a) for a in it.product([0, 1], repeat=n)]
+        return actions
 
     def preprocess(image, resolution = (64, 64)):
         img = skimage.transform.resize(image, resolution)
@@ -28,6 +34,7 @@ class DoomEnvironment:
 
 
     def run(self, agent, episodes_to_run = 100):
+        return
 
 
     def watch(self, agent, episodes_to_watch = 10, frame_repeat = 12):
@@ -36,7 +43,7 @@ class DoomEnvironment:
         self.game.init()
 
         for episode_num in range(episodes_to_watch):
-            game.new_episode()
+            self.game.new_episode()
 
             while not self.game.is_episode_finished():
                 

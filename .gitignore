@@ -1,0 +1,4 @@
+__pycache__
+scenarios/*
+saved_models/*
+*.ini
