@@ -1,4 +1,5 @@
 import numpy as np 
+from random import sample, randint, random
 
 class ReplayMemory:
     def __init__(self, resolution, capacity = 10000):
