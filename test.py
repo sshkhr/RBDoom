@@ -14,12 +14,7 @@ if __name__ == '__main__':
     
     agent = DQNAgent(action_count = len(actions), replay_memory =  memory)
 
-    print("Starting the training!")
-    agent.train(env)
-
-    environment.game.close()
-    print("======================================")
-    print("Training finished. It's time to watch!")
+    agent.load_saved_agent("saved_models/RBDoom_DQN.pth")
 
     env.watch(agent)
 
