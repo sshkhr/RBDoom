@@ -17,7 +17,7 @@ if __name__ == '__main__':
     print("Starting the training!")
     agent.train(env)
 
-    environment.game.close()
+    env.game.close()
     print("======================================")
     print("Training finished. It's time to watch!")
 
