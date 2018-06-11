@@ -6,11 +6,12 @@ from time import time,sleep
 
 if __name__ == '__main__':
 
-    env = DoomEnvironment("scenarios/basic.cfg")
+    env = DoomEnvironment(config_file_path = "scenarios/basic.cfg", scenario_file_path = "scenarios/basic.wad",
+    	                  resolution = (64,64), stack_size = 4)
     actions = env.get_actions()
 
     resolution = (64, 64)
-    memory = ReplayMemory(resolution = resolution)
+    memory = ReplayMemory(resolution = resolution, stack_size = 4)
     
     agent = DQNAgent(action_count = len(actions), replay_memory =  memory)
 

@@ -12,7 +12,7 @@ from time import time
 class CNN(nn.Module):
     def __init__(self, available_actions_count):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(1, 8, kernel_size=3, stride=2)
+        self.conv1 = nn.Conv2d(4, 8, kernel_size=3, stride=2)
         self.conv2 = nn.Conv2d(8, 16, kernel_size=3, stride=2)
         self.conv3 = nn.Conv2d(16, 32, kernel_size=3, stride=2)
         self.conv4 = nn.Conv2d(32, 32, kernel_size=3, stride=2)
@@ -144,21 +144,19 @@ class DQNAgent():
 
         eps = self.exploration_rate(epoch)
 
-        raw_state = environment.game.get_state().screen_buffer
-        state = environment.preprocess(raw_state)
+        state = environment.get_state()
         actions = environment.get_actions()
 
         if random() <= eps:
             a = randint(0, len(actions) - 1)
         else:
-        # Choose the best action according to the network.
-            state = state.reshape([1, 1, state.shape[0], state.shape[1]])
+        # Choose the best action according to the network
             a = self.get_best_action(state)
 
         reward = environment.game.make_action(actions[a], environment.frame_repeat)
 
         isterminal = environment.game.is_episode_finished()
-        next_state = environment.preprocess(environment.game.get_state().screen_buffer) if not isterminal else None
+        next_state = environment.get_state() if not isterminal else None
 
         # Remember the transition that was just experienced.
         self.memory.add_transition(state, a, next_state, isterminal, reward)
@@ -203,8 +201,8 @@ class DQNAgent():
                     actions = environment.get_actions()
 
                     while not environment.game.is_episode_finished():
-                        state = environment.preprocess(environment.game.get_state().screen_buffer)
-                        state = state.reshape([1, 1, state.shape[0], state.shape[1]])
+                        state = environment.get_state() #environment.preprocess(environment.game.get_state().screen_buffer)
+                        #state = state.reshape([1, state.shape[2], state.shape[0], state.shape[1]])
                         best_action_index = self.get_best_action(state)
                         environment.game.make_action(actions[best_action_index], environment.frame_repeat)
                     
