@@ -7,12 +7,12 @@ UNDER CONSTRUCTION
 RBDoom is a Rainbow [[1]](#references) based agent for playing the first-person shooter game Doom using the VizDoom platform.
 
 - [x] DQN [[3]](#references)
-- [] Double DQN [[4]](#references)
-- [] Prioritised Experience Replay [[5]](#references)
-- [] Dueling Network Architecture [[6]](#references)
-- [] Multi-step Returns [[7]](#references)
-- [] Distributional RL [[8]](#references)
-- [] Noisy Nets [[9]](#references)
+- [-] Double DQN [[4]](#references)
+- [-] Prioritised Experience Replay [[5]](#references)
+- [-] Dueling Network Architecture [[6]](#references)
+- [-] Multi-step Returns [[7]](#references)
+- [-] Distributional RL [[8]](#references)
+- [-] Noisy Nets [[9]](#references)
 
 Requirements
 ------------
