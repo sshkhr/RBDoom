@@ -4,6 +4,7 @@ from torch import nn
 from torch.nn import functional as F
 
 # This code was taken from https://github.com/Kaixhin/Rainbow/blob/master/model.py
+
 # Factorised NoisyLinear layer with bias
 class NoisyLinear(nn.Module):
   def __init__(self, in_features, out_features, std_init=0.4):
