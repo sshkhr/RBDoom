@@ -1,7 +1,14 @@
+import argparse
+from datetime import datetime
+import random
+import torch
+
 from memory import ReplayMemory
 from environment import DoomEnvironment
 from agent import DQNAgent 
 from time import time,sleep
+
+parser = argparse.ArgumentParser(description='RBDoom')
 
 
 if __name__ == '__main__':

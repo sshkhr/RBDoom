@@ -6,7 +6,7 @@ from time import time,sleep
 
 if __name__ == '__main__':
 
-    env = DoomEnvironment("scenarios/basic.cfg")
+    env = DoomEnvironment(config_file_path = "scenarios/basic.cfg", scenario_file_path = "scenarios/basic.wad",)
     actions = env.get_actions()
 
     resolution = (64, 64)
