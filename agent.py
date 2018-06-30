@@ -8,35 +8,18 @@ from torch.autograd import Variable
 from tqdm import trange
 from random import sample, randint, random
 from time import time
+from nets import dqn, dueling_dqn
 
-class CNN(nn.Module):
-    def __init__(self, available_actions_count):
-        super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(4, 8, kernel_size=3, stride=2)
-        self.conv2 = nn.Conv2d(8, 16, kernel_size=3, stride=2)
-        self.conv3 = nn.Conv2d(16, 32, kernel_size=3, stride=2)
-        self.conv4 = nn.Conv2d(32, 32, kernel_size=3, stride=2)
-        self.fc1 = nn.Linear(288, 128)
-        self.fc2 = nn.Linear(128, available_actions_count)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv3(x))
-        x = F.relu(self.conv4(x))
-        x = x.view(-1, 288)
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        return x
 
 class DQNet():
 
-    def __init__(self, action_count, learning_rate = 0.00025):
-        self.model = CNN(action_count)
+    def __init__(self, action_count, learning_rate = 0.001):
+        self.model = dueling_dqn.DDQN(action_count)
         self.learning_rate = learning_rate
         self.batch_size = 64
         self.criterion = nn.SmoothL1Loss()
-        self.optimizer = torch.optim.SGD(self.model.parameters(), learning_rate)
+        self.optimizer = optim.Adam(self.model.parameters(), learning_rate)
+        self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size = 100, gamma = 0.1)
         self.use_gpu = torch.cuda.is_available()
 
         if self.use_gpu:
@@ -80,7 +63,7 @@ class DQNAgent():
         self.model = DQNet(action_count)
         self.memory = replay_memory
         self.discount_factor = 0.99
-        self.epochs = 100
+        self.epochs = 750
         self.learning_steps_per_epoch = 2000
         self.test_episodes_per_epoch = 100
 
@@ -102,6 +85,25 @@ class DQNAgent():
         else:
             return end_eps
 
+    def get_epsilon_greedy_action(self, state, actions, epoch):
+        eps = self.exploration_rate(epoch)
+
+        if random() <= eps:
+            a = randint(0, len(actions) - 1)
+        else:
+        # Choose the best action according to the network
+            a = self.get_best_action(state)
+
+        return a 
+    
+    def get_best_action(self, state):
+        q = self.get_q_values(state)
+        m, index = torch.max(q, 1)
+        
+        action = index.data.numpy()[0]
+        #print("Taking action", action)
+        return action
+
     def get_q_values(self, state):
         state = torch.from_numpy(state)
 
@@ -116,14 +118,7 @@ class DQNAgent():
             q_values = q_values.cpu()
         
         return q_values
-
-    def get_best_action(self, state):
-        q = self.get_q_values(state)
-        m, index = torch.max(q, 1)
-        
-        action = index.data.numpy()[0]
-        return action
-
+    
     def learn_from_memory(self):
         if self.memory.size > self.model.batch_size:
             state, a, next_state, isterminal, r = self.memory.get_sample(self.model.batch_size)
@@ -142,16 +137,11 @@ class DQNAgent():
         """ Makes an action according to eps-greedy policy, observes the result
         (next state, reward) and learns from the transition"""
 
-        eps = self.exploration_rate(epoch)
-
         state = environment.get_state()
         actions = environment.get_actions()
 
-        if random() <= eps:
-            a = randint(0, len(actions) - 1)
-        else:
-        # Choose the best action according to the network
-            a = self.get_best_action(state)
+        a = self.get_epsilon_greedy_action(state, actions, epoch)
+
 
         reward = environment.game.make_action(actions[a], environment.frame_repeat)
 
@@ -167,7 +157,7 @@ class DQNAgent():
         
         time_start = time()
         for epoch in range(self.epochs):
-            print("\nEpoch %d\n-------" % (epoch + 1))
+            print("\nEpoch %d / %d \n-------" % (epoch + 1, self.epochs))
             train_episodes_finished = 0
             train_scores = []
 
@@ -216,5 +206,3 @@ class DQNAgent():
             self.model.save_agent(savefile)
 
             print("Total elapsed time: %.2f minutes" % ((time() - time_start) / 60.0))
-
-
