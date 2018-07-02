@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from noisy_layer import NoisyLinear
+from .noisy_layer import NoisyLinear
 
 class DQN(nn.Module):
     def __init__(self, available_actions_count, noisy = False):
@@ -9,9 +9,9 @@ class DQN(nn.Module):
         self.num_actions = available_actions_count
 
         if self.noisy_mode:
-            self.fully_connected = NoisyLinear()
+            self.fully_connected = NoisyLinear
         else:
-            self.fully_connected = nn.Linear()
+            self.fully_connected = nn.Linear
     
         super(DQN, self).__init__()
         self.conv1 = nn.Conv2d(4, 8, kernel_size=3, stride=2)
@@ -32,9 +32,9 @@ class DQN(nn.Module):
         return x
 
     def reset_noise(self):
-    if self.noisy_mode:
-        for layer_name, layer in self.named_children():
-          if 'fc' in layer_name:
-            layer.reset_noise()
-    else:
-        raise ValueError('The network was not initialized in noisy mode')
+        if self.noisy_mode:
+            for layer_name, layer in self.named_children():
+              if 'fc' in layer_name:
+                layer.reset_noise()
+        else:
+            raise ValueError('The network was not initialized in noisy mode')
